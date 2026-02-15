@@ -7,11 +7,22 @@ public class PlayerOther : MonoBehaviour
 {
     public GameObject gambleScreen;
     public GameObject chooseColor;
+    public GameObject loseScreen;
     public GameObject howMuch;
 
     public GameObject win;
     public GameObject lose;
     public GameObject[] gamblingObjects;
+    public GameObject obj;
+
+     public GameObject noCoins;
+
+    public GameState gameScript;
+
+    public int coins_ = 0;
+
+    public bool gambled = false;
+    
 
     public int whatColor = -1;
     public int howMuchAmt = 0;
@@ -21,12 +32,18 @@ public class PlayerOther : MonoBehaviour
         gambleScreen.SetActive(false);
         win.SetActive(false);
         lose.SetActive(false);
+        gameScript = obj.GetComponent<GameState>();
+         noCoins.SetActive(false);
 
     }
 
     // Update is called once per frame
     void Update()
     {
+        coins_ = gameScript.Coins;
+
+        
+        
 
     }
 
@@ -37,6 +54,7 @@ public class PlayerOther : MonoBehaviour
             Debug.Log("hit table");
             gambleScreen.SetActive(true);
             howMuch.SetActive(false);
+             noCoins.SetActive(false);
             chooseColor.SetActive(true);
         }
     }
@@ -48,6 +66,7 @@ public class PlayerOther : MonoBehaviour
         gambleScreen.SetActive(true);
         howMuch.SetActive(true);
         chooseColor.SetActive(false);
+         noCoins.SetActive(false);
 
 
     }
@@ -59,6 +78,7 @@ public class PlayerOther : MonoBehaviour
         gambleScreen.SetActive(true);
         howMuch.SetActive(true);
         chooseColor.SetActive(false);
+         noCoins.SetActive(false);
 
 
     }
@@ -66,29 +86,68 @@ public class PlayerOther : MonoBehaviour
 
     public void ALittleButton()
     {
+       
         howMuchAmt = 10;
         Debug.Log("chose button");
         gambleScreen.SetActive(true);
         howMuch.SetActive(false);
         chooseColor.SetActive(false);
-        int randOutcome = Random.Range(0, gamblingObjects.Length);
-        gamblingObjects[randOutcome].SetActive(true);
-           Debug.Log("here");
+        noCoins.SetActive(false);
+        if (coins_ >= howMuchAmt)
+        {
+            int randOutcome = Random.Range(0, gamblingObjects.Length);
+            GameObject obj_ = gamblingObjects[randOutcome];
+            obj_.SetActive(true);
+            if (obj_.CompareTag("Win"))
+            {
+                gameScript.coins += howMuchAmt;
+            }
+            else
+            {
+                gameScript.coins -= howMuchAmt;
+            }
+            gambled = true;
 
-
+        }
+        else
+        {
+            noCoins.SetActive(true);
+        }
+        Debug.Log("here");
+           
 
     }
 
     public void HalfButton()
     {
-        howMuchAmt = 0;
+        howMuchAmt = coins_ / 2;
         whatColor = 1;
         Debug.Log("chose button");
         gambleScreen.SetActive(true);
         howMuch.SetActive(false);
         chooseColor.SetActive(false);
-        int randOutcome = Random.Range(0, gamblingObjects.Length);
-        gamblingObjects[randOutcome].SetActive(true);
+         noCoins.SetActive(false);
+        if (coins_ >= howMuchAmt)
+        {
+            int randOutcome = Random.Range(0, gamblingObjects.Length);
+            GameObject obj_ = gamblingObjects[randOutcome];
+            obj_.SetActive(true);
+            if (obj_.CompareTag("Win"))
+            {
+                gameScript.coins += howMuchAmt;
+            }
+            else
+            {
+                gameScript.coins -= howMuchAmt;
+            }
+            gambled = true;
+            
+
+        }
+        else
+        {
+            noCoins.SetActive(true);
+        }
            Debug.Log("here");
 
 
@@ -96,14 +155,49 @@ public class PlayerOther : MonoBehaviour
 
     public void AllButton()
     {
-        howMuchAmt = 0;
+        howMuchAmt = coins_;
         Debug.Log("chose button");
          gambleScreen.SetActive(true);
         howMuch.SetActive(false);
         chooseColor.SetActive(false);
-        int randOutcome = Random.Range(0, gamblingObjects.Length);
-        gamblingObjects[randOutcome].SetActive(true);
-          Debug.Log("here");
+         noCoins.SetActive(false);
+        if (coins_ >= howMuchAmt)
+        {
+            int randOutcome = Random.Range(0, gamblingObjects.Length);
+            GameObject obj_ = gamblingObjects[randOutcome];
+            obj_.SetActive(true);
+            if (obj_.CompareTag("Win"))
+            {
+                gameScript.coins += howMuchAmt;
+            }
+            else
+            {
+                gameScript.coins -= howMuchAmt;
+            }
+            gambled = true;
+             
+             
+
+
+        }
+        else
+        {
+            noCoins.SetActive(true);
+        }
+        
+        Debug.Log("here");
+
+    }
+
+    public void ExitButton()
+    {
+        gambled = false;
+        Debug.Log("chose button");
+        gambleScreen.SetActive(false);
+        win.SetActive(false);
+        lose.SetActive(false);
+        noCoins.SetActive(false);
+        
 
     }
     

@@ -4,7 +4,7 @@ public class GameState : MonoBehaviour
 {
     public static GameState I { get; private set; }
 
-    [SerializeField] private int coins = 0;
+    [SerializeField] public int coins = 0;
     public int Coins => coins;
 
     private void Awake()
