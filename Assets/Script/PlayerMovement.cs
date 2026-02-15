@@ -8,6 +8,13 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Sprite walkA;
     [SerializeField] private Sprite walkB;
     [SerializeField] private float animationSpeed = 0.2f;
+    
+    [Header("Audio")]
+    [SerializeField] private AudioClip walkSound;
+    [SerializeField] private float stepInterval = 0.35f; // tweak to match your clip
+
+    private float stepTimer;
+    private AudioSource audioSource;
 
     private SpriteRenderer sr;
     private float animationTimer;
@@ -15,11 +22,14 @@ public class PlayerMovement : MonoBehaviour
 
     private Rigidbody2D rb;
     private Vector2 movement;
+    
+    private bool wasMoving;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     private void Update()
@@ -33,14 +43,26 @@ public class PlayerMovement : MonoBehaviour
         movement.Normalize();
 
         Animate();
+        HandleWalkingSound();
     }
     
     private void Animate()
     {
-        if (movement.magnitude > 0.1f)
+        if (walkA == null || walkB == null) return;
+
+        bool isMoving = movement.magnitude > 0.1f;
+
+        // If movement JUST started, instantly show the other frame
+        if (isMoving && !wasMoving)
+        {
+            toggle = !toggle;
+            sr.sprite = toggle ? walkA : walkB;
+            animationTimer = 0f;
+        }
+
+        if (isMoving)
         {
             animationTimer += Time.deltaTime;
-
             if (animationTimer >= animationSpeed)
             {
                 toggle = !toggle;
@@ -50,7 +72,32 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            sr.sprite = walkA;
+            sr.sprite = walkA;     // idle
+            animationTimer = 0f;   // reset so next move starts snappy
+        }
+
+        wasMoving = isMoving;
+    }
+
+    private void HandleWalkingSound()
+    {
+        if (walkSound == null || audioSource == null) return;
+
+        bool isMoving = movement.magnitude > 0.1f;
+
+        if (isMoving)
+        {
+            stepTimer -= Time.deltaTime;
+            if (stepTimer <= 0f)
+            {
+                audioSource.PlayOneShot(walkSound);
+                stepTimer = stepInterval;
+            }
+        }
+        else
+        {
+            // don’t cut sound; just reset timer so next move plays immediately
+            stepTimer = 0f;
         }
     }
 
